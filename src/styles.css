@@ -1,0 +1,575 @@
+/* Design language matched to woordle.nl:
+   Open Sans stack, white page, black 2px header rule, tiles with 3px
+   rgb(100,100,100) borders, green rgb(60,218,68) / yellow rgb(230,205,23)
+   states, keyboard keys rgb(200,200,200) with 10px radius. */
+
+:root {
+  --font: "Open Sans", Helvetica, Verdana, sans-serif;
+  --tile-border: rgb(100, 100, 100);
+  --given-bg: rgb(100, 100, 100);
+  --green: rgb(60, 218, 68);
+  --yellow: rgb(230, 205, 23);
+  --key-bg: rgb(200, 200, 200);
+  --key-bg-active: rgb(160, 160, 160);
+  --error: rgb(220, 60, 60);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: #fff;
+  color: #000;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ad-column page frame, matching woordle.nl's shell: side ad placeholders
+   flanking a centered content column, top/bottom placeholders inside it. */
+.columns {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.self-center {
+  align-self: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 600px;
+}
+
+#root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+
+.header {
+  height: 60px;
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 15px;
+  border-bottom: 2px solid #000;
+}
+
+.header > .icon-button {
+  justify-self: start;
+}
+
+.header > .header-buttons {
+  justify-self: end;
+}
+
+.header-title {
+  font-size: 28px;
+  letter-spacing: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* The circle is drawn by the SVG itself, exactly like woordle.nl. */
+.icon-button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-button:active {
+  color: rgb(100, 100, 100);
+}
+
+/* Status row */
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  font-size: 16px;
+}
+
+.status .difficulty {
+  text-transform: capitalize;
+}
+
+.status .timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* Board */
+
+.board-wrap {
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  width: min(100%, 440px);
+  aspect-ratio: 1;
+  border: 3px solid #000;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(18px, 5vw, 26px);
+  border: 1px solid var(--tile-border);
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+}
+
+/* Thicker 3x3 box separators in black, matching the outer border */
+.cell.box-right {
+  border-right-width: 3px;
+  border-right-color: #000;
+}
+
+.cell.box-bottom {
+  border-bottom-width: 3px;
+  border-bottom-color: #000;
+}
+
+.cell.given {
+  background: var(--given-bg);
+  color: #fff;
+  font-weight: 600;
+  cursor: default;
+}
+
+.cell.selected {
+  outline: 3px solid var(--yellow);
+  outline-offset: -3px;
+}
+
+.cell.peer {
+  background: rgb(238, 238, 238);
+}
+
+/* Given cells must stay dark when peer-highlighted, or their white digits
+   would wash out on the light peer background. */
+.cell.given.peer {
+  background: rgb(80, 80, 80);
+}
+
+.cell.same-value:not(.selected) {
+  background: rgb(255, 244, 181);
+}
+
+.cell.given.same-value:not(.selected) {
+  background: rgb(120, 120, 100);
+}
+
+.cell.conflict {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.cell.flash {
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* Won board celebration */
+.board.won .cell.given,
+.board.won .cell {
+  transition: background 0.4s ease;
+}
+
+.board.won .cell {
+  background: var(--green);
+  color: #fff;
+  border-color: #fff;
+}
+
+/* Number pad, styled like the woordle keyboard */
+
+.numpad {
+  margin-top: auto;
+  padding: 12px 8px calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dialpad {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 76px;
+}
+
+.side-key {
+  flex: 1;
+  max-width: none;
+  height: auto;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 20px;
+}
+
+.side-key-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgb(100, 100, 100);
+}
+
+.side-key.active {
+  background: var(--given-bg);
+  color: #fff;
+}
+
+.side-key.active .side-key-label {
+  color: #fff;
+}
+
+/* Keypad digits render small while notes mode is on, as a mode hint. */
+.key.note-key {
+  font-size: 14px;
+  align-items: flex-start;
+  padding-top: 6px;
+}
+
+.numpad-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.key {
+  width: 76px;
+  height: 50px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--key-bg);
+  color: #000;
+  font-family: var(--font);
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.key:active {
+  background: var(--key-bg-active);
+}
+
+.key.used-up {
+  background: rgb(235, 235, 235);
+  color: rgb(160, 160, 160);
+}
+
+.cell-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  font-size: clamp(8px, 1.9vw, 11px);
+  line-height: 1;
+  color: rgb(100, 100, 100);
+}
+
+.cell-notes span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Result overlay */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal h2 {
+  font-size: 24px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.modal .big-time {
+  font-size: 40px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.modal .sub {
+  font-size: 15px;
+  color: rgb(100, 100, 100);
+}
+
+.share-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--green);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 14px;
+  cursor: pointer;
+}
+
+.share-button:active {
+  filter: brightness(0.9);
+}
+
+.modal .close-link {
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 14px;
+  color: rgb(100, 100, 100);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Statistics, layout copied from woordle.nl's stats screen */
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.stats-title {
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stat {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 13px;
+}
+
+.stats-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stats-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+}
+
+.stats-bar-label {
+  width: 42px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-bar {
+  height: 18px;
+  background: var(--given-bg);
+  color: #fff;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+.stats-bar.current {
+  background: var(--green);
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Settings screen, woordle-style: label/control rows with hairlines */
+
+.settings-modal {
+  text-align: left;
+}
+
+.settings-modal .stats-title {
+  text-align: center;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.hairline {
+  border-top: 1px solid #000;
+}
+
+.settings-text {
+  font-size: 15px;
+}
+
+.settings-text a {
+  color: rgb(11, 105, 208);
+}
+
+.settings-footer {
+  font-size: 14px;
+  color: rgb(100, 100, 100);
+}
+
+.lang-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.lang-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--key-bg);
+  color: #000;
+  font-family: var(--font);
+  font-size: 14px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.lang-button.active {
+  background: var(--given-bg);
+  color: #fff;
+}
+
+.countdown {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.countdown-days {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.countdown-date {
+  font-size: 15px;
+  color: rgb(100, 100, 100);
+  font-variant-numeric: tabular-nums;
+}
+
+.loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(100, 100, 100);
+  font-size: 15px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 20;
+}

@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`daily > golden snapshot for launch day (guards against accidental algorithm changes) 1`] = `"316500094200060001540000028005006007007801500030705280080603400064208900753040000"`;
+
+exports[`daily > golden snapshot for launch day (guards against accidental algorithm changes) 2`] = `"316582794278964351549317628895426137627831549431795286982673415164258973753149862"`;

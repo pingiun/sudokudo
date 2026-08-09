@@ -1,0 +1,30 @@
+{
+  "name": "sudokudo",
+  "version": "0.1.0",
+  "description": "Daily deterministic sudoku — everyone plays the same puzzle each day",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "today": "tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "tsx": "^4.23.11",
+    "typescript": "^7.0.2",
+    "vite": "^7.2.0",
+    "vitest": "^4.1.10"
+  }
+}

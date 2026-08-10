@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import * as account from "./game/api.js";
 import { useDailyPuzzle } from "./game/useDailyPuzzle.js";
 import { Game } from "./game/Game.jsx";
 import { DIFFICULTIES, type Difficulty } from "./engine/grader.js";
@@ -45,6 +46,14 @@ export function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [lang, setLang] = useState<Lang>(detectLang);
   const t = STRINGS[lang];
+  const [email, setEmail] = useState<string | null>(account.getEmail());
+
+  useEffect(() => {
+    void account.handleAuthCallback().then((loggedIn) => {
+      if (loggedIn) setEmail(account.getEmail());
+    });
+    void account.flushQueue();
+  }, []);
 
   const switchLang = (next: Lang) => {
     saveLang(next);
@@ -122,6 +131,30 @@ export function App() {
         <div className="overlay" onClick={() => setShowSettings(false)}>
           <div className="modal settings-modal" onClick={(e) => e.stopPropagation()}>
             <div className="stats-title">{t.settings}</div>
+            <div className="settings-row">
+              <span>{email ? t.loggedInAs(email) : t.account}</span>
+              {email ? (
+                <button
+                  className="lang-button"
+                  onClick={() => {
+                    void account.logout();
+                    setEmail(null);
+                  }}
+                >
+                  {t.logoutButton}
+                </button>
+              ) : (
+                <button
+                  className="lang-button active"
+                  onClick={() => {
+                    window.location.href = account.loginUrl();
+                  }}
+                >
+                  {t.login}
+                </button>
+              )}
+            </div>
+            <div className="hairline" />
             <div className="settings-row">
               <span>{t.language}</span>
               <div className="lang-row">

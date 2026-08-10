@@ -8,6 +8,7 @@ import {
   type GameProgress,
 } from "./storage.js";
 import { StatsSection } from "./StatsSection.jsx";
+import { submitResult } from "./api.js";
 import type { Strings } from "../i18n.js";
 
 const boxOf = (i: number) => Math.floor(Math.floor(i / 9) / 3) * 3 + Math.floor((i % 9) / 3);
@@ -98,8 +99,10 @@ export function Game({
   useEffect(() => {
     if (variant === "daily" && finishedAt !== null) {
       recordGameWon(puzzle.number, finishedAt - startedAt);
+      // Sync to the account API when logged in (no-op otherwise).
+      void submitResult(puzzle.number, puzzle.solution, startedAt, finishedAt);
     }
-  }, [variant, puzzle.number, finishedAt, startedAt]);
+  }, [variant, puzzle.number, puzzle.solution, finishedAt, startedAt]);
 
   // Timer display (wall-clock: fair for racing, survives reloads).
   const [now, setNow] = useState(Date.now());

@@ -40,6 +40,10 @@ export interface Strings {
   footer: string;
   comingSoon: string;
   startsIn: (days: number) => string;
+  account: string;
+  login: string;
+  loggedInAs: (email: string) => string;
+  logoutButton: string;
 }
 
 const en: Strings = {
@@ -76,6 +80,10 @@ const en: Strings = {
   footer: "Sudokudo is a game by pingiun solutions",
   comingSoon: "A new sudoku every day. Everyone gets the same puzzle — race your friends!",
   startsIn: (days) => (days === 1 ? "Starts tomorrow!" : `Starts in ${days} days`),
+  account: "Account",
+  login: "Log in",
+  loggedInAs: (email) => `Logged in as ${email}`,
+  logoutButton: "Log out",
 };
 
 const nl: Strings = {
@@ -112,6 +120,10 @@ const nl: Strings = {
   footer: "Sudokudo is een spelletje van pingiun solutions",
   comingSoon: "Elke dag een nieuwe sudoku. Iedereen krijgt dezelfde puzzel — race tegen je vrienden!",
   startsIn: (days) => (days === 1 ? "Begint morgen!" : `Begint over ${days} dagen`),
+  account: "Account",
+  login: "Inloggen",
+  loggedInAs: (email) => `Ingelogd als ${email}`,
+  logoutButton: "Uitloggen",
 };
 
 export const STRINGS: Record<Lang, Strings> = { en, nl };

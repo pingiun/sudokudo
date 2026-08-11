@@ -5,11 +5,13 @@
  */
 
 import type { Difficulty } from "./engine/grader.js";
+import type { Mode } from "./engine/daily.js";
 
 export type Lang = "en" | "nl";
 
 export interface Strings {
   difficulty: Record<Difficulty, string>;
+  modes: Record<Mode, string>;
   howToPlay: string;
   helpText: string;
   play: string;
@@ -47,7 +49,15 @@ export interface Strings {
 }
 
 const en: Strings = {
-  difficulty: { easy: "Easy", medium: "Medium", hard: "Hard" },
+  difficulty: {
+    beginner: "Beginner",
+    relaxed: "Relaxed",
+    brisk: "Brisk",
+    easy: "Easy",
+    medium: "Medium",
+    hard: "Hard",
+  },
+  modes: { normal: "Normal", expert: "Expert" },
   howToPlay: "How to play",
   helpText:
     "Fill the grid so every row, column and 3×3 box contains the digits 1–9 exactly once. " +
@@ -87,7 +97,15 @@ const en: Strings = {
 };
 
 const nl: Strings = {
-  difficulty: { easy: "Makkelijk", medium: "Gemiddeld", hard: "Moeilijk" },
+  difficulty: {
+    beginner: "Beginner",
+    relaxed: "Ontspannen",
+    brisk: "Vlot",
+    easy: "Makkelijk",
+    medium: "Gemiddeld",
+    hard: "Moeilijk",
+  },
+  modes: { normal: "Normaal", expert: "Expert" },
   howToPlay: "Uitleg",
   helpText:
     "Vul het diagram zo in dat elke rij, kolom en elk 3×3-blok de cijfers 1–9 precies één keer bevat. " +

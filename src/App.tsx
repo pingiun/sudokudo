@@ -6,7 +6,7 @@ import { Game } from "./game/Game.jsx";
 import { DIFFICULTIES, type Difficulty } from "./engine/grader.js";
 import { StatsSection } from "./game/StatsSection.jsx";
 import { STRINGS, detectLang, saveLang, type Lang } from "./i18n.js";
-import { EPOCH_UTC, dateKey, puzzleNumber } from "./engine/daily.js";
+import { EPOCH_UTC, dateKey, puzzleNumber, type Mode } from "./engine/daily.js";
 
 /** Header icon exactly as woordle.nl draws it (30×30 SVG, 1.6 stroke). */
 function HeaderIcon({ children }: { children: ReactNode }) {
@@ -40,7 +40,14 @@ export function App() {
       puzzleNumber(today) < 1 && !new URLSearchParams(window.location.search).has("preview"),
     [today],
   );
-  const puzzle = useDailyPuzzle(today, difficultyOverride, !preLaunch);
+  const [mode, setMode] = useState<Mode>(() =>
+    localStorage.getItem("sudokudo:mode") === "expert" ? "expert" : "normal",
+  );
+  const switchMode = (next: Mode) => {
+    localStorage.setItem("sudokudo:mode", next);
+    setMode(next);
+  };
+  const puzzle = useDailyPuzzle(today, mode, difficultyOverride, !preLaunch);
   const [showHelp, setShowHelp] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -104,6 +111,20 @@ export function App() {
         </div>
       </header>
 
+      {!preLaunch && (
+        <div className="mode-switch">
+          {(["normal", "expert"] as const).map((m) => (
+            <button
+              key={m}
+              className={`mode-button${mode === m ? " active" : ""}`}
+              onClick={() => switchMode(m)}
+            >
+              {t.modes[m]}
+            </button>
+          ))}
+        </div>
+      )}
+
       {preLaunch ? (
         <div className="countdown">
           <div className="countdown-days">{t.startsIn(1 - puzzleNumber(today))}</div>
@@ -112,9 +133,11 @@ export function App() {
         </div>
       ) : puzzle ? (
         <Game
-          key={`${puzzle.date}:${difficultyOverride ?? "daily"}:${lang}`}
+          key={`${puzzle.date}:${mode}:${difficultyOverride ?? "daily"}:${lang}`}
           puzzle={puzzle}
-          variant={difficultyOverride ?? "daily"}
+          mode={mode}
+          variant={difficultyOverride ? `${mode}:${difficultyOverride}` : mode}
+          isDaily={!difficultyOverride}
           t={t}
         />
       ) : (
@@ -124,7 +147,7 @@ export function App() {
       {showStats && (
         <div className="overlay" onClick={() => setShowStats(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <StatsSection highlightNumber={puzzle?.number} t={t} />
+            <StatsSection mode={mode} highlightNumber={puzzle?.number} t={t} />
             <button className="close-link" onClick={() => setShowStats(false)}>
               {t.close}
             </button>

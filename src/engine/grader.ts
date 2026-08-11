@@ -15,9 +15,35 @@
 
 import { GRID_SIZE, boxOf, colOf, rowOf } from "./solver.js";
 
-export type Difficulty = "easy" | "medium" | "hard";
+export type Difficulty = "beginner" | "relaxed" | "brisk" | "easy" | "medium" | "hard";
 
-export const DIFFICULTIES: readonly Difficulty[] = ["easy", "medium", "hard"];
+export const DIFFICULTIES: readonly Difficulty[] = [
+  "beginner",
+  "relaxed",
+  "brisk",
+  "easy",
+  "medium",
+  "hard",
+];
+
+/**
+ * Dense singles-solvable tiers, graded purely by given count (digging stops
+ * exactly at the target, so grades are deterministic). A tier's grade floor
+ * sits between its dig target and the next tier's.
+ */
+export const DIG_TARGETS: Record<string, number> = {
+  beginner: 50,
+  relaxed: 46,
+  brisk: 42,
+  easy: 38,
+};
+
+const GRADE_FLOORS: [Difficulty, number][] = [
+  ["beginner", 48],
+  ["relaxed", 44],
+  ["brisk", 40],
+  ["easy", 36],
+];
 
 /** A singles-solvable puzzle with at least this many givens grades easy. */
 export const EASY_MIN_CLUES = 36;
@@ -110,5 +136,8 @@ export function gradePuzzle(givens: Uint8Array): Difficulty {
   if (!solvableWithSingles(givens, true)) return "hard";
   let clues = 0;
   for (const digit of givens) if (digit !== 0) clues++;
-  return clues >= EASY_MIN_CLUES ? "easy" : "medium";
+  for (const [tier, floor] of GRADE_FLOORS) {
+    if (clues >= floor) return tier;
+  }
+  return "medium";
 }

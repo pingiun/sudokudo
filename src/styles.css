@@ -109,6 +109,34 @@ body {
   color: rgb(100, 100, 100);
 }
 
+/* Mode switch: normal | expert */
+
+.mode-switch {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 15px 0;
+}
+
+.mode-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--key-bg);
+  color: #000;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 22px;
+  cursor: pointer;
+}
+
+.mode-button.active {
+  background: var(--given-bg);
+  color: #fff;
+}
+
 /* Status row */
 
 .status {

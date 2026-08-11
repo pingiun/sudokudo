@@ -8,7 +8,7 @@
  *   npx tsx scripts/seed-puzzles.ts 2026-08-31 2027-12-31 | ssh vps 'jellespelletjes-api seed-sudoku'
  */
 
-import { dailyPuzzle, GENERATOR_VERSION } from "../src/engine/daily.js";
+import { dailyPuzzle, GENERATOR_VERSION, MODES } from "../src/engine/daily.js";
 
 const [startArg, endArg] = process.argv.slice(2);
 if (!startArg || !endArg) {
@@ -23,15 +23,18 @@ if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || start > end)
 }
 
 for (let t = start.getTime(); t <= end.getTime(); t += 86400000) {
-  const puzzle = dailyPuzzle(new Date(t));
-  process.stdout.write(
-    JSON.stringify({
-      puzzle_number: puzzle.number,
-      date: puzzle.date,
-      generator_version: GENERATOR_VERSION,
-      difficulty: puzzle.difficulty,
-      givens: Array.from(puzzle.givens).join(""),
-      solution: Array.from(puzzle.solution).join(""),
-    }) + "\n",
-  );
+  for (const mode of MODES) {
+    const puzzle = dailyPuzzle(new Date(t), mode);
+    process.stdout.write(
+      JSON.stringify({
+        mode,
+        puzzle_number: puzzle.number,
+        date: puzzle.date,
+        generator_version: GENERATOR_VERSION,
+        difficulty: puzzle.difficulty,
+        givens: Array.from(puzzle.givens).join(""),
+        solution: Array.from(puzzle.solution).join(""),
+      }) + "\n",
+    );
+  }
 }

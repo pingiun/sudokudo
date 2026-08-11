@@ -35,26 +35,38 @@ export function puzzleNumber(date: Date): number {
   return Math.floor((day - EPOCH_UTC) / 86400000) + 1;
 }
 
-export function seedForDate(date: Date): number {
-  return fnv1a(`sudokudo:${GENERATOR_VERSION}:${dateKey(date)}`);
+/**
+ * Two daily puzzles: the accessible "normal" game everyone can finish, and
+ * the "expert" game for the pros. They MUST be completely different grids,
+ * so the modes use different seeds: expert keeps the original (pre-modes)
+ * seed string for backwards compatibility with already-seeded servers.
+ */
+export type Mode = "normal" | "expert";
+export const MODES: readonly Mode[] = ["normal", "expert"];
+
+export function seedForDate(date: Date, mode: Mode = "expert"): number {
+  const modePart = mode === "expert" ? "" : `${mode}:`;
+  return fnv1a(`sudokudo:${GENERATOR_VERSION}:${modePart}${dateKey(date)}`);
 }
 
 /**
- * Which difficulty a given calendar day gets (UTC weekday, same clock as the
- * puzzle itself): medium on Tuesday and Thursday, hard on Friday and Sunday,
- * easy the rest of the week. The seed does not depend on this, so adjusting
- * the schedule only changes days going forward in the intended way.
+ * Which difficulty a given calendar day gets, per mode (UTC weekday, same
+ * clock as the puzzle itself). Expert: medium Tue/Thu, hard Fri/Sun, easy
+ * otherwise. Normal mirrors the same rhythm one notch down: relaxed Tue/Thu,
+ * brisk Fri/Sun, beginner otherwise. Seeds do not depend on this, so
+ * adjusting a schedule only changes days going forward in the intended way.
  */
-export function difficultyForDate(date: Date): Difficulty {
+export function difficultyForDate(date: Date, mode: Mode = "expert"): Difficulty {
+  const expert = mode === "expert";
   switch (date.getUTCDay()) {
     case 2: // Tuesday
     case 4: // Thursday
-      return "medium";
+      return expert ? "medium" : "relaxed";
     case 5: // Friday
     case 0: // Sunday
-      return "hard";
+      return expert ? "hard" : "brisk";
     default:
-      return "easy";
+      return expert ? "easy" : "beginner";
   }
 }
 
@@ -62,14 +74,20 @@ export interface DailyPuzzle extends Puzzle {
   date: string;
   number: number;
   seed: number;
+  mode: Mode;
 }
 
-export function dailyPuzzle(date: Date = new Date(), difficulty?: Difficulty): DailyPuzzle {
-  const seed = seedForDate(date);
+export function dailyPuzzle(
+  date: Date = new Date(),
+  mode: Mode = "expert",
+  difficulty?: Difficulty,
+): DailyPuzzle {
+  const seed = seedForDate(date, mode);
   return {
-    ...generatePuzzle(seed, difficulty ?? difficultyForDate(date)),
+    ...generatePuzzle(seed, difficulty ?? difficultyForDate(date, mode)),
     date: dateKey(date),
     number: puzzleNumber(date),
     seed,
+    mode,
   };
 }

@@ -29,7 +29,7 @@
 
 import { Rng } from "./rng.js";
 import { GRID_SIZE, boxOf, colOf, countSolutions, rowOf } from "./solver.js";
-import { gradePuzzle, solvableWithSingles, type Difficulty } from "./grader.js";
+import { DIG_TARGETS, gradePuzzle, solvableWithSingles, type Difficulty } from "./grader.js";
 
 export interface Puzzle {
   /** 81 cells, row-major; 0 = empty cell the player must fill. */
@@ -85,18 +85,13 @@ export function generateSolvedGrid(rng: Rng): Uint8Array {
   return grid;
 }
 
-/** Easy puzzles keep this many givens; must be >= EASY_MIN_CLUES. */
-export const EASY_DIG_TARGET = 38;
-
 /** Solvability check used while digging, per target difficulty. */
 function stillOkay(givens: Uint8Array, difficulty: Difficulty): boolean {
-  switch (difficulty) {
-    case "easy":
-    case "medium":
-      return solvableWithSingles(givens, true);
-    case "hard":
-      return countSolutions(givens, 2) === 1;
-  }
+  // Every tier except hard must stay solvable with singles; hard only needs
+  // a unique solution.
+  return difficulty === "hard"
+    ? countSolutions(givens, 2) === 1
+    : solvableWithSingles(givens, true);
 }
 
 /** One generation attempt: full grid, then dig at the difficulty's level. */
@@ -108,7 +103,7 @@ function attemptPuzzle(attemptSeed: number, difficulty: Difficulty): Puzzle {
   rng.shuffle(order);
 
   const givens = solution.slice();
-  const minClues = difficulty === "easy" ? EASY_DIG_TARGET : 17;
+  const minClues = DIG_TARGETS[difficulty] ?? 17;
   let clueCount = GRID_SIZE;
   for (const index of order) {
     if (clueCount <= minClues) break;

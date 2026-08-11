@@ -19,14 +19,15 @@ export interface GameProgress {
 }
 
 /**
- * `variant` separates the normal daily game ("daily") from difficulty
- * overrides (?difficulty=easy), so testing an override never touches the
- * real daily progress.
+ * `variant` identifies which daily game state belongs to: "expert" (the
+ * original mode, stored without a suffix for backwards compatibility),
+ * "normal", or test variants like difficulty overrides. Distinct variants
+ * never touch each other's puzzle cache or progress.
  */
 // The generator version is part of the key: a version bump must never serve
 // a puzzle (or progress made on it) cached by an older algorithm.
 const suffix = (date: string, variant: string) =>
-  variant === "daily" ? `${GENERATOR_VERSION}:${date}` : `${GENERATOR_VERSION}:${date}:${variant}`;
+  variant === "expert" ? `${GENERATOR_VERSION}:${date}` : `${GENERATOR_VERSION}:${date}:${variant}`;
 const puzzleKey = (date: string, variant: string) => `sudokudo:puzzle:${suffix(date, variant)}`;
 const progressKey = (date: string, variant: string) => `sudokudo:progress:${suffix(date, variant)}`;
 
@@ -75,7 +76,8 @@ export interface Stats {
   buckets: number[];
 }
 
-const STATS_KEY = "sudokudo:stats";
+// Per-mode stats: expert keeps the original key (backwards compatible).
+const statsKey = (mode: string) => (mode === "expert" ? "sudokudo:stats" : `sudokudo:stats:${mode}`);
 
 const emptyStats = (): Stats => ({
   gamesPlayed: 0,
@@ -88,24 +90,24 @@ const emptyStats = (): Stats => ({
   buckets: new Array(TIME_BUCKET_LABELS.length).fill(0),
 });
 
-export function loadStats(): Stats {
-  const stats = readJson<Stats>(STATS_KEY);
+export function loadStats(mode: string): Stats {
+  const stats = readJson<Stats>(statsKey(mode));
   if (!stats || stats.buckets?.length !== TIME_BUCKET_LABELS.length) return emptyStats();
   return stats;
 }
 
 /** Count a day's puzzle as played (idempotent per puzzle number). */
-export function recordGameStarted(puzzleNumber: number): void {
-  const stats = loadStats();
+export function recordGameStarted(mode: string, puzzleNumber: number): void {
+  const stats = loadStats(mode);
   if (stats.lastPlayedNumber === puzzleNumber) return;
   stats.lastPlayedNumber = puzzleNumber;
   stats.gamesPlayed++;
-  writeJson(STATS_KEY, stats);
+  writeJson(statsKey(mode), stats);
 }
 
 /** Record a win and update streaks (idempotent per puzzle number). */
-export function recordGameWon(puzzleNumber: number, elapsedMs: number): void {
-  const stats = loadStats();
+export function recordGameWon(mode: string, puzzleNumber: number, elapsedMs: number): void {
+  const stats = loadStats(mode);
   if (stats.lastWonNumber === puzzleNumber) return;
   stats.currentStreak = stats.lastWonNumber === puzzleNumber - 1 ? stats.currentStreak + 1 : 1;
   stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
@@ -113,7 +115,7 @@ export function recordGameWon(puzzleNumber: number, elapsedMs: number): void {
   stats.gamesWon++;
   stats.lastWonBucket = bucketOf(elapsedMs);
   stats.buckets[stats.lastWonBucket]!++;
-  writeJson(STATS_KEY, stats);
+  writeJson(statsKey(mode), stats);
 }
 
 /* ---------------------------- per-day state ---------------------------- */

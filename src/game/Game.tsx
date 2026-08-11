@@ -44,11 +44,15 @@ function findConflicts(values: number[]): boolean[] {
 
 export function Game({
   puzzle,
+  mode,
   variant,
+  isDaily,
   t,
 }: {
   puzzle: PuzzleResponse;
+  mode: "normal" | "expert";
   variant: string;
+  isDaily: boolean;
   t: Strings;
 }) {
   const initialProgress = useMemo<GameProgress>(
@@ -92,17 +96,17 @@ export function Game({
     saveProgress(puzzle.date, variant, { entries, notes, startedAt, finishedAt });
   }, [puzzle.date, variant, entries, notes, startedAt, finishedAt]);
 
-  // Statistics track only the real daily game, not ?difficulty overrides.
+  // Statistics track only the real daily games, not ?difficulty overrides.
   useEffect(() => {
-    if (variant === "daily") recordGameStarted(puzzle.number);
-  }, [variant, puzzle.number]);
+    if (isDaily) recordGameStarted(mode, puzzle.number);
+  }, [isDaily, mode, puzzle.number]);
   useEffect(() => {
-    if (variant === "daily" && finishedAt !== null) {
-      recordGameWon(puzzle.number, finishedAt - startedAt);
+    if (isDaily && finishedAt !== null) {
+      recordGameWon(mode, puzzle.number, finishedAt - startedAt);
       // Sync to the account API when logged in (no-op otherwise).
-      void submitResult(puzzle.number, puzzle.solution, startedAt, finishedAt);
+      void submitResult(mode, puzzle.number, puzzle.solution, startedAt, finishedAt);
     }
-  }, [variant, puzzle.number, puzzle.solution, finishedAt, startedAt]);
+  }, [isDaily, mode, puzzle.number, puzzle.solution, finishedAt, startedAt]);
 
   // Timer display (wall-clock: fair for racing, survives reloads).
   const [now, setNow] = useState(Date.now());
@@ -231,7 +235,7 @@ export function Game({
 
   const share = async () => {
     const text = [
-      `Sudokudo #${puzzle.number} (${t.difficulty[puzzle.difficulty as keyof typeof t.difficulty].toLowerCase()})`,
+      `Sudokudo #${puzzle.number} (${t.modes[mode].toLowerCase()} · ${t.difficulty[puzzle.difficulty as keyof typeof t.difficulty].toLowerCase()})`,
       `⏱️ ${formatTime(elapsedMs)}`,
       "https://sudokudo.nl",
     ].join("\n");
@@ -347,10 +351,10 @@ export function Game({
             <h2>{t.solved}</h2>
             <div className="big-time">{formatTime(elapsedMs)}</div>
             <div className="sub">
-              Sudokudo #{puzzle.number} ·{" "}
+              Sudokudo #{puzzle.number} · {t.modes[mode].toLowerCase()} ·{" "}
               {t.difficulty[puzzle.difficulty as keyof typeof t.difficulty].toLowerCase()}
             </div>
-            {variant === "daily" && <StatsSection highlightNumber={puzzle.number} t={t} />}
+            {isDaily && <StatsSection mode={mode} highlightNumber={puzzle.number} t={t} />}
             <button className="share-button" onClick={share}>
               {t.share}
             </button>

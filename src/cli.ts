@@ -30,15 +30,20 @@ if (Number.isNaN(date.getTime())) {
   process.exit(1);
 }
 
-const difficultyArg = process.argv[3] as Difficulty | undefined;
+// Remaining args, in any order: a mode (normal|expert) and/or a difficulty.
+const rest = process.argv.slice(3).filter(Boolean);
+const mode = rest.includes("normal") ? ("normal" as const) : ("expert" as const);
+const difficultyArg = rest.find((a) => a !== "normal" && a !== "expert") as
+  | Difficulty
+  | undefined;
 if (difficultyArg !== undefined && !DIFFICULTIES.includes(difficultyArg)) {
   console.error(`invalid difficulty: ${difficultyArg} (expected ${DIFFICULTIES.join(", ")})`);
   process.exit(1);
 }
 
-const puzzle = dailyPuzzle(date, difficultyArg);
+const puzzle = dailyPuzzle(date, mode, difficultyArg);
 console.log(
-  `Sudokudo #${puzzle.number} — ${puzzle.date} (${puzzle.difficulty}, ${puzzle.clueCount} clues, seed ${puzzle.seed})`,
+  `Sudokudo #${puzzle.number} — ${puzzle.date} (${puzzle.mode} ${puzzle.difficulty}, ${puzzle.clueCount} clues, seed ${puzzle.seed})`,
 );
 console.log();
 console.log(renderGrid(puzzle.givens));

@@ -140,6 +140,38 @@ describe("daily", () => {
     expect(tuesday.difficulty).toBe("medium");
   });
 
+  it("generates the dense tiers at their exact clue targets", () => {
+    for (const [tier, clues] of [["beginner", 50], ["relaxed", 46], ["brisk", 42]] as const) {
+      const puzzle = generatePuzzle(1234, tier);
+      expect(puzzle.difficulty).toBe(tier);
+      expect(puzzle.clueCount).toBe(clues);
+      expect(solvableWithSingles(puzzle.givens, true)).toBe(true);
+      expect(countSolutions(puzzle.givens, 2)).toBe(1);
+    }
+  });
+
+  it("normal and expert are completely different puzzles on the same day", () => {
+    const date = new Date(Date.UTC(2026, 8, 2));
+    const normal = dailyPuzzle(date, "normal");
+    const expert = dailyPuzzle(date, "expert");
+    expect(normal.seed).not.toBe(expert.seed);
+    expect(Array.from(normal.solution)).not.toEqual(Array.from(expert.solution));
+  });
+
+  it("expert seeds are unchanged from before modes existed", () => {
+    const date = new Date(Date.UTC(2026, 7, 31));
+    expect(seedForDate(date, "expert")).toBe(seedForDate(date));
+  });
+
+  it("normal mode schedule: relaxed Tue/Thu, brisk Fri/Sun, beginner otherwise", () => {
+    // 2026-08-03 is a Monday.
+    const byWeekday = ["beginner", "relaxed", "beginner", "relaxed", "brisk", "beginner", "brisk"];
+    byWeekday.forEach((expected, offset) => {
+      const date = new Date(Date.UTC(2026, 7, 3 + offset));
+      expect(difficultyForDate(date, "normal")).toBe(expected);
+    });
+  });
+
   it("golden snapshot for launch day (guards against accidental algorithm changes)", () => {
     const puzzle = dailyPuzzle(new Date(Date.UTC(2026, 7, 31)));
     expect(Array.from(puzzle.givens).join("")).toMatchSnapshot();

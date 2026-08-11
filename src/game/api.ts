@@ -113,23 +113,30 @@ export async function logout(): Promise<void> {
   }
 }
 
-/** Upload the pre-account aggregate stats, once (409 = already done elsewhere). */
+/** Upload the pre-account aggregate stats per mode, once each (409 = already done elsewhere). */
 async function importLocalStatsOnce(): Promise<void> {
-  if (localStorage.getItem(IMPORTED_KEY)) return;
-  const stats = loadStats();
-  if (stats.gamesPlayed === 0) {
-    localStorage.setItem(IMPORTED_KEY, "1");
-    return;
-  }
-  try {
-    const { ok, status } = await api("POST", "/import/sudokudo", stats);
-    if (ok || status === 409) localStorage.setItem(IMPORTED_KEY, "1");
-  } catch {
-    // retried on next login/load
+  for (const [mode, game] of [
+    ["normal", "sudokudo"],
+    ["expert", "sudokudo-expert"],
+  ] as const) {
+    const flag = `${IMPORTED_KEY}:${game}`;
+    if (localStorage.getItem(flag)) continue;
+    const stats = loadStats(mode);
+    if (stats.gamesPlayed === 0) {
+      localStorage.setItem(flag, "1");
+      continue;
+    }
+    try {
+      const { ok, status } = await api("POST", `/import/${game}`, stats);
+      if (ok || status === 409) localStorage.setItem(flag, "1");
+    } catch {
+      // retried on next login/load
+    }
   }
 }
 
 interface QueuedResult {
+  game: string;
   day: number;
   submission: unknown;
 }
@@ -146,8 +153,12 @@ function writeQueue(queue: QueuedResult[]): void {
   localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
 }
 
+/** Server game id per mode; expert is a separate leaderboard-able game. */
+const gameId = (mode: string) => (mode === "expert" ? "sudokudo-expert" : "sudokudo");
+
 /** Submit a finished daily puzzle; queues for retry on network failure. */
 export async function submitResult(
+  mode: string,
   puzzleNumber: number,
   solution: number[],
   startedAt: number,
@@ -160,17 +171,18 @@ export async function submitResult(
     finished_at_ms: finishedAt,
     generator_version: GENERATOR_VERSION,
   };
-  const delivered = await tryDeliver({ day: puzzleNumber, submission });
+  const item = { game: gameId(mode), day: puzzleNumber, submission };
+  const delivered = await tryDeliver(item);
   if (!delivered) {
-    const queue = readQueue().filter((q) => q.day !== puzzleNumber);
-    queue.push({ day: puzzleNumber, submission });
+    const queue = readQueue().filter((q) => !(q.game === item.game && q.day === item.day));
+    queue.push(item);
     writeQueue(queue);
   }
 }
 
 async function tryDeliver(item: QueuedResult): Promise<boolean> {
   try {
-    const { ok, status } = await api("PUT", `/results/sudokudo/${item.day}`, item.submission);
+    const { ok, status } = await api("PUT", `/results/${item.game ?? "sudokudo"}/${item.day}`, item.submission);
     // 4xx responses are terminal (verified-conflict, rejected, expired session):
     // retrying the identical payload will never succeed, so drop it.
     return ok || (status >= 400 && status < 500);

@@ -8,8 +8,16 @@ import type { Strings } from "../i18n.js";
  * `highlightNumber`: today's puzzle number; the most recent win's bar shows
  * green while it is today's (like woordle's green row for the current game).
  */
-export function StatsSection({ highlightNumber, t }: { highlightNumber?: number; t: Strings }) {
-  const stats = loadStats();
+export function StatsSection({
+  mode,
+  highlightNumber,
+  t,
+}: {
+  mode: string;
+  highlightNumber?: number;
+  t: Strings;
+}) {
+  const stats = loadStats(mode);
   const winPercentage =
     stats.gamesPlayed === 0 ? 0 : Math.round((stats.gamesWon / stats.gamesPlayed) * 100);
   const maxBucket = Math.max(1, ...stats.buckets);

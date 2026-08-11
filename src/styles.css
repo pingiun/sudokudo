@@ -137,6 +137,10 @@ body {
   color: #fff;
 }
 
+.mode-switch.in-modal {
+  padding: 0 0 4px;
+}
+
 /* Status row */
 
 .status {

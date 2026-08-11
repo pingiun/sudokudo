@@ -50,6 +50,8 @@ export function App() {
   const puzzle = useDailyPuzzle(today, mode, difficultyOverride, !preLaunch);
   const [showHelp, setShowHelp] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  // The stats modal has its own mode tab, opening on the mode being played.
+  const [statsMode, setStatsMode] = useState<Mode>(mode);
   const [showSettings, setShowSettings] = useState(false);
   const [lang, setLang] = useState<Lang>(detectLang);
   const t = STRINGS[lang];
@@ -87,7 +89,10 @@ export function App() {
           <button
             className="icon-button"
             aria-label={t.statsLabel}
-            onClick={() => setShowStats(true)}
+            onClick={() => {
+              setStatsMode(mode);
+              setShowStats(true);
+            }}
           >
             <HeaderIcon>
               <circle cx="12" cy="12" r="10" />
@@ -147,7 +152,18 @@ export function App() {
       {showStats && (
         <div className="overlay" onClick={() => setShowStats(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <StatsSection mode={mode} highlightNumber={puzzle?.number} t={t} />
+            <div className="mode-switch in-modal">
+              {(["normal", "expert"] as const).map((m) => (
+                <button
+                  key={m}
+                  className={`mode-button${statsMode === m ? " active" : ""}`}
+                  onClick={() => setStatsMode(m)}
+                >
+                  {t.modes[m]}
+                </button>
+              ))}
+            </div>
+            <StatsSection mode={statsMode} highlightNumber={puzzle?.number} t={t} />
             <button className="close-link" onClick={() => setShowStats(false)}>
               {t.close}
             </button>

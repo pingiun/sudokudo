@@ -57,7 +57,7 @@ const en: Strings = {
     medium: "Medium",
     hard: "Hard",
   },
-  modes: { normal: "Normal", expert: "Expert" },
+  modes: { normal: "Regular", expert: "Expert" },
   howToPlay: "How to play",
   helpText:
     "Fill the grid so every row, column and 3×3 box contains the digits 1–9 exactly once. " +
@@ -105,7 +105,7 @@ const nl: Strings = {
     medium: "Gemiddeld",
     hard: "Moeilijk",
   },
-  modes: { normal: "Normaal", expert: "Expert" },
+  modes: { normal: "Gewoon", expert: "Expert" },
   howToPlay: "Uitleg",
   helpText:
     "Vul het diagram zo in dat elke rij, kolom en elk 3×3-blok de cijfers 1–9 precies één keer bevat. " +

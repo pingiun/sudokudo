@@ -49,10 +49,15 @@ export function App() {
   const [email, setEmail] = useState<string | null>(account.getEmail());
 
   useEffect(() => {
-    void account.handleAuthCallback().then((loggedIn) => {
-      if (loggedIn) setEmail(account.getEmail());
+    void account.handleAuthCallback().then(async (loggedIn) => {
+      if (loggedIn) {
+        setEmail(account.getEmail());
+      } else {
+        // Detect single sign-off from elsewhere: revalidate the session.
+        setEmail(await account.validateSession());
+      }
+      void account.flushQueue();
     });
-    void account.flushQueue();
   }, []);
 
   const switchLang = (next: Lang) => {

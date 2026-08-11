@@ -46,7 +46,28 @@ async function api(
   } catch {
     // no body
   }
+  // Single sign-off: a 401 with a token present means the session was revoked
+  // (e.g. logout on another site or device) — drop the local login state.
+  if (response.status === 401 && token) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(EMAIL_KEY);
+  }
   return { ok: response.ok, status: response.status, json };
+}
+
+/**
+ * Check that the stored session is still valid (it may have been revoked by
+ * a logout elsewhere). Returns the email when logged in, null otherwise.
+ */
+export async function validateSession(): Promise<string | null> {
+  if (!getToken()) return null;
+  try {
+    const { ok } = await api("GET", "/me");
+    return ok ? getEmail() : null;
+  } catch {
+    // offline: keep the local state, assume still logged in
+    return getEmail();
+  }
 }
 
 /**
@@ -74,14 +95,20 @@ export async function handleAuthCallback(): Promise<boolean> {
 }
 
 export async function logout(): Promise<void> {
-  const hadToken = getToken() !== null;
+  // Capture the token BEFORE clearing local state — the server call needs it
+  // to revoke every session (single sign-off).
+  const token = getToken();
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(EMAIL_KEY);
-  if (hadToken) {
+  if (token) {
     try {
-      await api("POST", "/logout", {});
+      await fetch(API() + "/logout", {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+        body: "{}",
+      });
     } catch {
-      // best effort
+      // best effort; sessions expire server-side eventually
     }
   }
 }

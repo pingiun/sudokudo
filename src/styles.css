@@ -378,9 +378,11 @@ body {
 .modal {
   background: #fff;
   border-radius: 8px;
-  padding: 28px 24px;
+  padding: 36px 28px;
   width: 100%;
-  max-width: 340px;
+  max-width: 480px;
+  min-height: 320px;
+  justify-content: center;
   text-align: center;
   display: flex;
   flex-direction: column;

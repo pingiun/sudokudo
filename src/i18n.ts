@@ -49,10 +49,12 @@ export interface Strings {
 }
 
 const en: Strings = {
+  // The gewoon tiers (beginner/relaxed/brisk) display the same names as the
+  // expert tiers: difficulty is relative to the mode you're playing.
   difficulty: {
-    beginner: "Beginner",
-    relaxed: "Relaxed",
-    brisk: "Brisk",
+    beginner: "Easy",
+    relaxed: "Medium",
+    brisk: "Hard",
     easy: "Easy",
     medium: "Medium",
     hard: "Hard",
@@ -98,9 +100,9 @@ const en: Strings = {
 
 const nl: Strings = {
   difficulty: {
-    beginner: "Beginner",
-    relaxed: "Ontspannen",
-    brisk: "Vlot",
+    beginner: "Makkelijk",
+    relaxed: "Gemiddeld",
+    brisk: "Moeilijk",
     easy: "Makkelijk",
     medium: "Gemiddeld",
     hard: "Moeilijk",

@@ -378,15 +378,17 @@ body {
 .modal {
   background: #fff;
   border-radius: 8px;
-  padding: 36px 28px;
+  padding: 44px 40px;
   width: 100%;
   max-width: 480px;
-  min-height: 320px;
+  min-height: min(72vh, 640px);
+  max-height: 88vh;
+  overflow-y: auto;
   justify-content: center;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 24px;
 }
 
 .modal h2 {

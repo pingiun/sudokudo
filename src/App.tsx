@@ -28,20 +28,28 @@ function HeaderIcon({ children }: { children: ReactNode }) {
 
 export function App() {
   const today = useMemo(() => new Date(), []);
-  // ?difficulty=easy|medium|hard overrides the day's schedule (for testing).
+  const [mode, setMode] = useState<Mode>(() =>
+    localStorage.getItem("sudokudo:mode") === "expert" ? "expert" : "normal",
+  );
+  // ?difficulty=… overrides the day's schedule (for testing). Accepts the
+  // internal tier ids, and the display names (Dutch or English) resolved
+  // relative to the active mode: ?difficulty=moeilijk is brisk in gewoon
+  // and hard in expert.
   const difficultyOverride = useMemo(() => {
-    const raw = new URLSearchParams(window.location.search).get("difficulty");
-    return DIFFICULTIES.includes(raw as Difficulty) ? (raw as Difficulty) : undefined;
-  }, []);
+    const raw = new URLSearchParams(window.location.search).get("difficulty")?.toLowerCase();
+    if (!raw) return undefined;
+    if (DIFFICULTIES.includes(raw as Difficulty)) return raw as Difficulty;
+    const ladder: Difficulty[] =
+      mode === "expert" ? ["easy", "medium", "hard"] : ["beginner", "relaxed", "brisk"];
+    const index = { makkelijk: 0, gemiddeld: 1, moeilijk: 2 }[raw];
+    return index === undefined ? undefined : ladder[index];
+  }, [mode]);
   // Before launch day the site shows a countdown; ?preview bypasses it so
   // the real site can be tested (and developed) ahead of launch.
   const preLaunch = useMemo(
     () =>
       puzzleNumber(today) < 1 && !new URLSearchParams(window.location.search).has("preview"),
     [today],
-  );
-  const [mode, setMode] = useState<Mode>(() =>
-    localStorage.getItem("sudokudo:mode") === "expert" ? "expert" : "normal",
   );
   const switchMode = (next: Mode) => {
     localStorage.setItem("sudokudo:mode", next);

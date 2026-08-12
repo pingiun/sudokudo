@@ -141,7 +141,7 @@ describe("daily", () => {
   });
 
   it("generates the dense tiers at their exact clue targets", () => {
-    for (const [tier, clues] of [["beginner", 50], ["relaxed", 46], ["brisk", 42]] as const) {
+    for (const [tier, clues] of [["beginner", 50], ["relaxed", 46], ["brisk", 38]] as const) {
       const puzzle = generatePuzzle(1234, tier);
       expect(puzzle.difficulty).toBe(tier);
       expect(puzzle.clueCount).toBe(clues);

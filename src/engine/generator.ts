@@ -14,12 +14,12 @@
  *      cell's digits in its pre-drawn order.
  *   4. Draw one shuffled order of all 81 cell indices.
  *   5. Walk that order once; clear each cell if the puzzle afterwards is
- *      still solvable at the target difficulty's technique level (easy and
- *      medium: naked + hidden singles; hard: any technique, i.e. exhaustive
- *      uniqueness check), restore it otherwise. For easy, stop digging as
- *      soon as EASY_DIG_TARGET clues remain — density is what makes it easy.
- *   6. Grade the result. If the grade matches the target difficulty, return
- *      it; otherwise continue with the next attempt.
+ *      still solvable at the target difficulty's technique level (every tier
+ *      except hard: naked + hidden singles; hard: exhaustive uniqueness
+ *      check), restore it otherwise. Dense tiers stop digging at their
+ *      DIG_TARGETS clue count — density is what makes them easier.
+ *   6. If the result meets the requested tier's spec, return it; otherwise
+ *      continue with the next attempt.
  *
  * The attempt loop exists because digging at a technique level can overshoot
  * downwards (a medium dig can end up easy, a hard dig can end up solvable
@@ -29,7 +29,7 @@
 
 import { Rng } from "./rng.js";
 import { GRID_SIZE, boxOf, colOf, countSolutions, rowOf } from "./solver.js";
-import { DIG_TARGETS, gradePuzzle, solvableWithSingles, type Difficulty } from "./grader.js";
+import { DIG_TARGETS, EASY_MIN_CLUES, solvableWithSingles, type Difficulty } from "./grader.js";
 
 export interface Puzzle {
   /** 81 cells, row-major; 0 = empty cell the player must fill. */
@@ -116,7 +116,24 @@ function attemptPuzzle(attemptSeed: number, difficulty: Difficulty): Puzzle {
     }
   }
 
-  return { givens, solution, clueCount, difficulty: gradePuzzle(givens) };
+  return { givens, solution, clueCount, difficulty };
+}
+
+/**
+ * Does a dug puzzle satisfy the requested tier's spec? (Tiers can share
+ * parameters — brisk and easy are the same class — so this checks the spec
+ * directly instead of round-tripping through a grade.)
+ */
+function meetsSpec(difficulty: Difficulty, givens: Uint8Array, clueCount: number): boolean {
+  const target = DIG_TARGETS[difficulty];
+  if (target !== undefined) {
+    return clueCount === target && solvableWithSingles(givens, true);
+  }
+  if (difficulty === "medium") {
+    return clueCount < EASY_MIN_CLUES && solvableWithSingles(givens, true);
+  }
+  // hard: unique but singles get stuck
+  return !solvableWithSingles(givens, true) && countSolutions(givens, 2) === 1;
 }
 
 /**
@@ -128,6 +145,6 @@ export function generatePuzzle(seed: number, difficulty: Difficulty = "medium"):
   for (let attempt = 0; ; attempt++) {
     const attemptSeed = (seed + Math.imul(attempt, 0x9e3779b9)) >>> 0;
     const puzzle = attemptPuzzle(attemptSeed, difficulty);
-    if (puzzle.difficulty === difficulty) return puzzle;
+    if (meetsSpec(difficulty, puzzle.givens, puzzle.clueCount)) return puzzle;
   }
 }

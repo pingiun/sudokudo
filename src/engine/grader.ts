@@ -34,14 +34,17 @@ export const DIFFICULTIES: readonly Difficulty[] = [
 export const DIG_TARGETS: Record<string, number> = {
   beginner: 50,
   relaxed: 46,
-  brisk: 42,
+  // brisk is deliberately equivalent to expert's easy: the fully-dug
+  // singles-solvable puzzle. Different mode seed, same difficulty class.
+  brisk: 38,
   easy: 38,
 };
 
+// gradePuzzle is informational: brisk and easy share a clue class, so a
+// 38-clue singles grid grades "easy" regardless of which tier requested it.
 const GRADE_FLOORS: [Difficulty, number][] = [
   ["beginner", 48],
   ["relaxed", 44],
-  ["brisk", 40],
   ["easy", 36],
 ];
 

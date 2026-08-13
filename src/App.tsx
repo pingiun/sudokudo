@@ -227,8 +227,8 @@ export function App() {
             <div className="hairline" />
             <p className="settings-text">
               {t.feedback}{" "}
-              <a href="https://twitter.com/pingiun_" target="_blank" rel="noreferrer">
-                @pingiun_
+              <a href="https://github.com/pingiun/sudokudo" target="_blank" rel="noreferrer">
+                GitHub
               </a>
             </p>
             <div className="hairline" />

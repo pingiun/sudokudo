@@ -609,3 +609,14 @@ body {
   font-size: 14px;
   z-index: 20;
 }
+
+/* Account: green header icon when logged in, popup action row. */
+.icon-button.logged-in {
+  color: var(--green);
+}
+
+.account-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+}

@@ -43,6 +43,7 @@ export interface Strings {
   comingSoon: string;
   startsIn: (days: number) => string;
   account: string;
+  accountInfo: string[];
   login: string;
   loggedInAs: (email: string) => string;
   logoutButton: string;
@@ -93,6 +94,11 @@ const en: Strings = {
   comingSoon: "A new sudoku every day. Everyone gets the same puzzle — race your friends!",
   startsIn: (days) => (days === 1 ? "Starts tomorrow!" : `Starts in ${days} days`),
   account: "Account",
+  accountInfo: [
+    "You can create an account to save your scores!",
+    "Your statistics and streak are stored safely on the server, and you can continue playing on any device.",
+    "One account works for all games on jellespelletjes.nl.",
+  ],
   login: "Log in",
   loggedInAs: (email) => `Logged in as ${email}`,
   logoutButton: "Log out",
@@ -141,6 +147,11 @@ const nl: Strings = {
   comingSoon: "Elke dag een nieuwe sudoku. Iedereen krijgt dezelfde puzzel — race tegen je vrienden!",
   startsIn: (days) => (days === 1 ? "Begint morgen!" : `Begint over ${days} dagen`),
   account: "Account",
+  accountInfo: [
+    "Je kunt een account aanmaken om je scores op te slaan!",
+    "Je statistieken en reeks staan dan veilig op de server, en je kunt op meerdere apparaten verder spelen.",
+    "Eén account werkt voor alle spelletjes op jellespelletjes.nl.",
+  ],
   login: "Inloggen",
   loggedInAs: (email) => `Ingelogd als ${email}`,
   logoutButton: "Uitloggen",

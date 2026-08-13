@@ -61,6 +61,7 @@ export function App() {
   // The stats modal has its own mode tab, opening on the mode being played.
   const [statsMode, setStatsMode] = useState<Mode>(mode);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAccount, setShowAccount] = useState(false);
   const [lang, setLang] = useState<Lang>(detectLang);
   const t = STRINGS[lang];
   const [email, setEmail] = useState<string | null>(account.getEmail());
@@ -94,6 +95,17 @@ export function App() {
         </button>
         <span className="header-title">Sudokudo</span>
         <div className="header-buttons">
+          <button
+            className={`icon-button${email ? " logged-in" : ""}`}
+            aria-label={t.account}
+            onClick={() => setShowAccount(true)}
+          >
+            <HeaderIcon>
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="9.5" r="3" />
+              <path d="M5.8 18.4c1.5-2.9 3.7-4 6.2-4s4.7 1.1 6.2 4" />
+            </HeaderIcon>
+          </button>
           <button
             className="icon-button"
             aria-label={t.statsLabel}
@@ -175,6 +187,56 @@ export function App() {
             <button className="close-link" onClick={() => setShowStats(false)}>
               {t.close}
             </button>
+          </div>
+        </div>
+      )}
+
+      {showAccount && (
+        <div className="overlay" onClick={() => setShowAccount(false)}>
+          <div className="modal settings-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="stats-title">{t.account}</div>
+            {email ? (
+              <>
+                <p className="settings-text">
+                  <strong>{t.loggedInAs(email)}</strong>
+                </p>
+                <div className="account-actions">
+                  <button className="lang-button" onClick={() => setShowAccount(false)}>
+                    {t.close}
+                  </button>
+                  <button
+                    className="lang-button"
+                    onClick={() => {
+                      void account.logout();
+                      setEmail(null);
+                    }}
+                  >
+                    {t.logoutButton}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {t.accountInfo.map((line) => (
+                  <p key={line} className="settings-text">
+                    {line}
+                  </p>
+                ))}
+                <div className="account-actions">
+                  <button className="lang-button" onClick={() => setShowAccount(false)}>
+                    {t.close}
+                  </button>
+                  <button
+                    className="lang-button active"
+                    onClick={() => {
+                      window.location.href = account.loginUrl();
+                    }}
+                  >
+                    {t.login}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

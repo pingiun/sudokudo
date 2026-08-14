@@ -636,3 +636,10 @@ body {
   justify-content: space-between;
   margin-top: 14px;
 }
+
+/* Mid-game ad between the board and the keyboard: takes no space until
+   Ezoic fills it. */
+.midgame-ad {
+  display: flex;
+  justify-content: center;
+}

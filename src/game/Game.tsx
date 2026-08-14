@@ -91,18 +91,6 @@ export function Game({
   );
   const conflicts = useMemo(() => findConflicts(values), [values]);
   const won = finishedAt !== null;
-  // The result screen carries an ad (placeholder 102, "under_page_title"):
-  // Ezoic's SPA flow shows the dynamically mounted div on open and tears it
-  // down on close.
-  useEffect(() => {
-    if (!showResult || !won) return;
-    const ez = window.ezstandalone;
-    if (!ez) return;
-    ez.cmd.push(() => ez.displayMore(102));
-    return () => {
-      ez.cmd.push(() => ez.destroyPlaceholders(102));
-    };
-  }, [showResult, won]);
   // "Stuck" = more conflicted cells than a single misplaced digit can cause.
   // One wrong digit lights up at most itself and the one entry it clashes
   // with (2 cells) — the player sees that in red and fixes it themselves.
@@ -325,6 +313,9 @@ export function Game({
         </div>
       </div>
 
+      {/* Ad between the play field and the keyboard (Ezoic 102). */}
+      <div id="ezoic-pub-ad-placeholder-102" className="midgame-ad" />
+
       <div className="numpad">
         <div className="dialpad">
           {[
@@ -370,7 +361,6 @@ export function Game({
       {showResult && won && (
         <div className="overlay" onClick={() => setShowResult(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div id="ezoic-pub-ad-placeholder-102" />
             <h2>{t.solved}</h2>
             <div className="big-time">{formatTime(elapsedMs)}</div>
             <div className="sub">

@@ -293,6 +293,16 @@ body {
   gap: 6px;
 }
 
+/* On wide screens there is far more height than the game needs; pinning
+   the pad to the bottom would leave a large hole under the board, so let
+   it follow the board instead. Small screens keep the thumb-friendly
+   bottom-pinned pad. */
+@media (min-width: 1200px) {
+  .numpad {
+    margin-top: 4px;
+  }
+}
+
 .dialpad {
   display: flex;
   flex-direction: column;
@@ -643,11 +653,4 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 14px;
-}
-
-/* Mid-game ad between the board and the keyboard: takes no space until
-   Ezoic fills it. */
-.midgame-ad {
-  display: flex;
-  justify-content: center;
 }

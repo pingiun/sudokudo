@@ -341,9 +341,7 @@ export function Game({
         </div>
       </div>
 
-      {/* Ad between the play field and the keyboard (Ezoic 102). */}
-      <div id="ezoic-pub-ad-placeholder-102" className="midgame-ad" />
-
+      {/* Ad between the play field and the keyboard (Ezoic 111). */}
       <div className="game-ad" id="ezoic-pub-ad-placeholder-111"></div>
 
       <div className="numpad">

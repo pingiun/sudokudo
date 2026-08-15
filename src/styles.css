@@ -275,6 +275,14 @@ body {
   border-color: #fff;
 }
 
+/* In-game ad slot between board and number pad */
+.game-ad {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
 /* Number pad, styled like the woordle keyboard */
 
 .numpad {

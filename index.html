@@ -46,19 +46,19 @@
     <div class="columns">
       <div id="ezoic-pub-ad-placeholder-103" class="self-center"></div>
       <div class="container">
-        <div id="ezoic-pub-ad-placeholder-106"></div>
         <div id="root"></div>
       </div>
       <div id="ezoic-pub-ad-placeholder-104" class="self-center"></div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Static placeholders. 111 lives inside the React app (between the
+      // board and the number pad) and is shown from a mount effect with
+      // showAds — the SPA API; do not mix with define/enable/display.
       window.ezstandalone = window.ezstandalone || {};
       ezstandalone.cmd = ezstandalone.cmd || [];
       ezstandalone.cmd.push(function () {
-        ezstandalone.define(102, 103, 104, 106);
-        ezstandalone.enable();
-        ezstandalone.display();
+        ezstandalone.showAds(102, 103, 104);
       });
     </script>
   </body>

@@ -129,6 +129,23 @@ export function Game({
     }
   }, [isDaily, mode, puzzle.number, puzzle.solution, finishedAt, startedAt]);
 
+  // In-game ad between the board and the number pad (Ezoic SPA API).
+  // Game remounts on mode/language switches, so destroy on unmount and
+  // show again on the fresh placeholder div.
+  useEffect(() => {
+    const ez = (window as unknown as { ezstandalone?: { cmd: Array<() => void> } }).ezstandalone;
+    if (!ez) return;
+    ez.cmd.push(function (this: void) {
+      (ez as unknown as { showAds: (...ids: number[]) => void }).showAds(111);
+    });
+    return () => {
+      ez.cmd.push(function (this: void) {
+        const api = ez as unknown as { destroyPlaceholders?: (...ids: number[]) => void };
+        api.destroyPlaceholders?.(111);
+      });
+    };
+  }, []);
+
   // Timer display (wall-clock: fair for racing, survives reloads).
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -326,6 +343,8 @@ export function Game({
 
       {/* Ad between the play field and the keyboard (Ezoic 102). */}
       <div id="ezoic-pub-ad-placeholder-102" className="midgame-ad" />
+
+      <div className="game-ad" id="ezoic-pub-ad-placeholder-111"></div>
 
       <div className="numpad">
         <div className="dialpad">

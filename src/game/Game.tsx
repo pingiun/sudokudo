@@ -4,7 +4,7 @@ declare global {
   interface Window {
     ezstandalone?: {
       cmd: Array<() => void>;
-      displayMore: (...ids: number[]) => void;
+      showAds: (...ids: number[]) => void;
       destroyPlaceholders: (...ids: number[]) => void;
     };
   }
@@ -97,7 +97,7 @@ export function Game({
     if (!showResult || !won) return;
     const ez = window.ezstandalone;
     if (!ez) return;
-    ez.cmd.push(() => ez.displayMore(109));
+    ez.cmd.push(() => ez.showAds(109));
     return () => {
       ez.cmd.push(() => ez.destroyPlaceholders(109));
     };
@@ -133,16 +133,11 @@ export function Game({
   // Game remounts on mode/language switches, so destroy on unmount and
   // show again on the fresh placeholder div.
   useEffect(() => {
-    const ez = (window as unknown as { ezstandalone?: { cmd: Array<() => void> } }).ezstandalone;
+    const ez = window.ezstandalone;
     if (!ez) return;
-    ez.cmd.push(function (this: void) {
-      (ez as unknown as { showAds: (...ids: number[]) => void }).showAds(111);
-    });
+    ez.cmd.push(() => ez.showAds(111));
     return () => {
-      ez.cmd.push(function (this: void) {
-        const api = ez as unknown as { destroyPlaceholders?: (...ids: number[]) => void };
-        api.destroyPlaceholders?.(111);
-      });
+      ez.cmd.push(() => ez.destroyPlaceholders(111));
     };
   }, []);
 

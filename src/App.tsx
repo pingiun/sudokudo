@@ -289,6 +289,16 @@ export function App() {
             <div className="hairline" />
             <p className="settings-text">
               {t.feedback}{" "}
+              <a
+                href="https://www.linkedin.com/company/jellespelletjes"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t.feedbackLink}
+              </a>
+            </p>
+            <p className="settings-text">
+              {t.code}{" "}
               <a href="https://github.com/pingiun/sudokudo" target="_blank" rel="noreferrer">
                 GitHub
               </a>

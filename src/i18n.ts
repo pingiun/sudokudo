@@ -39,6 +39,8 @@ export interface Strings {
   settings: string;
   language: string;
   feedback: string;
+  feedbackLink: string;
+  code: string;
   footer: string;
   comingSoon: string;
   startsIn: (days: number) => string;
@@ -90,6 +92,8 @@ const en: Strings = {
   settings: "Settings",
   language: "Language",
   feedback: "Feedback:",
+  feedbackLink: "Jellespelletjes on LinkedIn",
+  code: "Code:",
   footer: "Sudokudo is a game by pingiun solutions",
   comingSoon: "A new sudoku every day. Everyone gets the same puzzle — race your friends!",
   startsIn: (days) => (days === 1 ? "Starts tomorrow!" : `Starts in ${days} days`),
@@ -143,6 +147,8 @@ const nl: Strings = {
   settings: "Instellingen",
   language: "Taal",
   feedback: "Feedback:",
+  feedbackLink: "Jellespelletjes op LinkedIn",
+  code: "Code:",
   footer: "Sudokudo is een spelletje van pingiun solutions",
   comingSoon: "Elke dag een nieuwe sudoku. Iedereen krijgt dezelfde puzzel — race tegen je vrienden!",
   startsIn: (days) => (days === 1 ? "Begint morgen!" : `Begint over ${days} dagen`),

@@ -412,17 +412,13 @@ body {
 .modal {
   background: #fff;
   border-radius: 8px;
-  padding: 44px 40px;
   width: 100%;
   max-width: 480px;
   min-height: min(72vh, 640px);
   max-height: 88vh;
-  overflow-y: auto;
-  justify-content: center;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 }
 
 .modal h2 {
@@ -661,13 +657,9 @@ body {
 }
 
 .modal-x {
-  /* Sticky, so it stays in the visible top-right corner while the modal
-     scrolls; the negative margins tuck it into the padding without
-     shifting the content below. */
-  position: sticky;
-  top: -36px;
-  align-self: flex-end;
-  margin: -36px -30px -60px 0;
+  position: absolute;
+  top: 8px;
+  right: 10px;
   z-index: 1;
   border: 0;
   background: inherit;
@@ -678,4 +670,17 @@ body {
   line-height: 1;
   padding: 8px;
   cursor: pointer;
+}
+
+/* The scrolling body of a popup: the modal itself stays fixed so the
+   corner close button never moves. */
+.modal-scroll {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  padding: 44px 40px;
 }

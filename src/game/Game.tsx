@@ -387,20 +387,22 @@ export function Game({
             <button className="modal-x" aria-label={t.close} onClick={() => setShowResult(false)}>
               ✕
             </button>
-            <div id="ezoic-pub-ad-placeholder-109" />
-            <h2>{t.solved}</h2>
-            <div className="big-time">{formatTime(elapsedMs)}</div>
-            <div className="sub">
-              Sudokudo #{puzzle.number} · {t.modes[mode].toLowerCase()} ·{" "}
-              {t.difficulty[puzzle.difficulty as keyof typeof t.difficulty].toLowerCase()}
+            <div className="modal-scroll">
+              <div id="ezoic-pub-ad-placeholder-109" />
+              <h2>{t.solved}</h2>
+              <div className="big-time">{formatTime(elapsedMs)}</div>
+              <div className="sub">
+                Sudokudo #{puzzle.number} · {t.modes[mode].toLowerCase()} ·{" "}
+                {t.difficulty[puzzle.difficulty as keyof typeof t.difficulty].toLowerCase()}
+              </div>
+              {isDaily && <StatsSection mode={mode} highlightNumber={puzzle.number} t={t} />}
+              <button className="share-button" onClick={share}>
+                {t.share}
+              </button>
+              <button className="close-link" onClick={() => setShowResult(false)}>
+                {t.backToBoard}
+              </button>
             </div>
-            {isDaily && <StatsSection mode={mode} highlightNumber={puzzle.number} t={t} />}
-            <button className="share-button" onClick={share}>
-              {t.share}
-            </button>
-            <button className="close-link" onClick={() => setShowResult(false)}>
-              {t.backToBoard}
-            </button>
           </div>
         </div>
       )}

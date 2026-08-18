@@ -175,21 +175,23 @@ export function App() {
             <button className="modal-x" aria-label={t.close} onClick={() => setShowStats(false)}>
               ✕
             </button>
-            <div className="mode-switch in-modal">
-              {(["normal", "expert"] as const).map((m) => (
-                <button
-                  key={m}
-                  className={`mode-button${statsMode === m ? " active" : ""}`}
-                  onClick={() => setStatsMode(m)}
-                >
-                  {t.modes[m]}
-                </button>
-              ))}
+            <div className="modal-scroll">
+              <div className="mode-switch in-modal">
+                {(["normal", "expert"] as const).map((m) => (
+                  <button
+                    key={m}
+                    className={`mode-button${statsMode === m ? " active" : ""}`}
+                    onClick={() => setStatsMode(m)}
+                  >
+                    {t.modes[m]}
+                  </button>
+                ))}
+              </div>
+              <StatsSection mode={statsMode} highlightNumber={puzzle?.number} t={t} />
+              <button className="close-link" onClick={() => setShowStats(false)}>
+                {t.close}
+              </button>
             </div>
-            <StatsSection mode={statsMode} highlightNumber={puzzle?.number} t={t} />
-            <button className="close-link" onClick={() => setShowStats(false)}>
-              {t.close}
-            </button>
           </div>
         </div>
       )}
@@ -200,49 +202,51 @@ export function App() {
             <button className="modal-x" aria-label={t.close} onClick={() => setShowAccount(false)}>
               ✕
             </button>
-            <div className="stats-title">{t.account}</div>
-            {email ? (
-              <>
-                <p className="settings-text">
-                  <strong>{t.loggedInAs(email)}</strong>
-                </p>
-                <div className="account-actions">
-                  <button className="lang-button" onClick={() => setShowAccount(false)}>
-                    {t.close}
-                  </button>
-                  <button
-                    className="lang-button"
-                    onClick={() => {
-                      void account.logout();
-                      setEmail(null);
-                    }}
-                  >
-                    {t.logoutButton}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                {t.accountInfo.map((line) => (
-                  <p key={line} className="settings-text">
-                    {line}
+            <div className="modal-scroll">
+              <div className="stats-title">{t.account}</div>
+              {email ? (
+                <>
+                  <p className="settings-text">
+                    <strong>{t.loggedInAs(email)}</strong>
                   </p>
-                ))}
-                <div className="account-actions">
-                  <button className="lang-button" onClick={() => setShowAccount(false)}>
-                    {t.close}
-                  </button>
-                  <button
-                    className="lang-button active"
-                    onClick={() => {
-                      window.location.href = account.loginUrl();
-                    }}
-                  >
-                    {t.login}
-                  </button>
-                </div>
-              </>
-            )}
+                  <div className="account-actions">
+                    <button className="lang-button" onClick={() => setShowAccount(false)}>
+                      {t.close}
+                    </button>
+                    <button
+                      className="lang-button"
+                      onClick={() => {
+                        void account.logout();
+                        setEmail(null);
+                      }}
+                    >
+                      {t.logoutButton}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {t.accountInfo.map((line) => (
+                    <p key={line} className="settings-text">
+                      {line}
+                    </p>
+                  ))}
+                  <div className="account-actions">
+                    <button className="lang-button" onClick={() => setShowAccount(false)}>
+                      {t.close}
+                    </button>
+                    <button
+                      className="lang-button active"
+                      onClick={() => {
+                        window.location.href = account.loginUrl();
+                      }}
+                    >
+                      {t.login}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -253,71 +257,73 @@ export function App() {
             <button className="modal-x" aria-label={t.close} onClick={() => setShowSettings(false)}>
               ✕
             </button>
-            <div className="stats-title">{t.settings}</div>
-            <div className="settings-row">
-              <span>{email ? t.loggedInAs(email) : t.account}</span>
-              {email ? (
-                <button
-                  className="lang-button"
-                  onClick={() => {
-                    void account.logout();
-                    setEmail(null);
-                  }}
-                >
-                  {t.logoutButton}
-                </button>
-              ) : (
-                <button
-                  className="lang-button active"
-                  onClick={() => {
-                    window.location.href = account.loginUrl();
-                  }}
-                >
-                  {t.login}
-                </button>
-              )}
-            </div>
-            <div className="hairline" />
-            <div className="settings-row">
-              <span>{t.language}</span>
-              <div className="lang-row">
-                <button
-                  className={`lang-button${lang === "en" ? " active" : ""}`}
-                  onClick={() => switchLang("en")}
-                >
-                  EN
-                </button>
-                <button
-                  className={`lang-button${lang === "nl" ? " active" : ""}`}
-                  onClick={() => switchLang("nl")}
-                >
-                  NL
-                </button>
+            <div className="modal-scroll">
+              <div className="stats-title">{t.settings}</div>
+              <div className="settings-row">
+                <span>{email ? t.loggedInAs(email) : t.account}</span>
+                {email ? (
+                  <button
+                    className="lang-button"
+                    onClick={() => {
+                      void account.logout();
+                      setEmail(null);
+                    }}
+                  >
+                    {t.logoutButton}
+                  </button>
+                ) : (
+                  <button
+                    className="lang-button active"
+                    onClick={() => {
+                      window.location.href = account.loginUrl();
+                    }}
+                  >
+                    {t.login}
+                  </button>
+                )}
               </div>
+              <div className="hairline" />
+              <div className="settings-row">
+                <span>{t.language}</span>
+                <div className="lang-row">
+                  <button
+                    className={`lang-button${lang === "en" ? " active" : ""}`}
+                    onClick={() => switchLang("en")}
+                  >
+                    EN
+                  </button>
+                  <button
+                    className={`lang-button${lang === "nl" ? " active" : ""}`}
+                    onClick={() => switchLang("nl")}
+                  >
+                    NL
+                  </button>
+                </div>
+              </div>
+              <div className="hairline" />
+              <p className="settings-text">
+                {t.feedback}{" "}
+                <a
+                  href="https://www.linkedin.com/company/jellespelletjes"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {t.feedbackLink}
+                </a>
+              </p>
+              <p className="settings-text">
+                {t.code}{" "}
+                <a href="https://github.com/pingiun/sudokudo" target="_blank" rel="noreferrer">
+                  GitHub
+                </a>
+              </p>
+              <div className="hairline" />
+              <p className="settings-footer">{t.footer}</p>
+              <p className="settings-footer">BTW Nr: NL004111081B24</p>
+              <button className="close-link" onClick={() => setShowSettings(false)}>
+                {t.close}
+              </button>
             </div>
-            <div className="hairline" />
-            <p className="settings-text">
-              {t.feedback}{" "}
-              <a
-                href="https://www.linkedin.com/company/jellespelletjes"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t.feedbackLink}
-              </a>
-            </p>
-            <p className="settings-text">
-              {t.code}{" "}
-              <a href="https://github.com/pingiun/sudokudo" target="_blank" rel="noreferrer">
-                GitHub
-              </a>
-            </p>
-            <div className="hairline" />
-            <p className="settings-footer">{t.footer}</p>
-            <p className="settings-footer">BTW Nr: NL004111081B24</p>
-            <button className="close-link" onClick={() => setShowSettings(false)}>
-              {t.close}
-            </button>
           </div>
         </div>
       )}
@@ -328,11 +334,13 @@ export function App() {
             <button className="modal-x" aria-label={t.close} onClick={() => setShowHelp(false)}>
               ✕
             </button>
-            <h2>Sudokudo</h2>
-            <p className="sub">{t.helpText}</p>
-            <button className="share-button" onClick={() => setShowHelp(false)}>
-              {t.play}
-            </button>
+            <div className="modal-scroll">
+              <h2>Sudokudo</h2>
+              <p className="sub">{t.helpText}</p>
+              <button className="share-button" onClick={() => setShowHelp(false)}>
+                {t.play}
+              </button>
+            </div>
           </div>
         </div>
       )}

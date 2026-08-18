@@ -654,3 +654,22 @@ body {
   justify-content: space-between;
   margin-top: 14px;
 }
+
+/* Corner close for every popup, woordle-style. */
+.modal {
+  position: relative;
+}
+
+.modal-x {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--font);
+  font-size: 20px;
+  line-height: 1;
+  padding: 8px;
+  cursor: pointer;
+}

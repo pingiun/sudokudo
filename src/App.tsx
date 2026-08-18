@@ -172,6 +172,9 @@ export function App() {
       {showStats && (
         <div className="overlay" onClick={() => setShowStats(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" aria-label={t.close} onClick={() => setShowStats(false)}>
+              ✕
+            </button>
             <div className="mode-switch in-modal">
               {(["normal", "expert"] as const).map((m) => (
                 <button
@@ -194,6 +197,9 @@ export function App() {
       {showAccount && (
         <div className="overlay" onClick={() => setShowAccount(false)}>
           <div className="modal settings-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" aria-label={t.close} onClick={() => setShowAccount(false)}>
+              ✕
+            </button>
             <div className="stats-title">{t.account}</div>
             {email ? (
               <>
@@ -244,6 +250,9 @@ export function App() {
       {showSettings && (
         <div className="overlay" onClick={() => setShowSettings(false)}>
           <div className="modal settings-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" aria-label={t.close} onClick={() => setShowSettings(false)}>
+              ✕
+            </button>
             <div className="stats-title">{t.settings}</div>
             <div className="settings-row">
               <span>{email ? t.loggedInAs(email) : t.account}</span>
@@ -316,6 +325,9 @@ export function App() {
       {showHelp && (
         <div className="overlay" onClick={() => setShowHelp(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" aria-label={t.close} onClick={() => setShowHelp(false)}>
+              ✕
+            </button>
             <h2>Sudokudo</h2>
             <p className="sub">{t.helpText}</p>
             <button className="share-button" onClick={() => setShowHelp(false)}>

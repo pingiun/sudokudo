@@ -384,6 +384,9 @@ export function Game({
       {showResult && won && (
         <div className="overlay" onClick={() => setShowResult(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-x" aria-label={t.close} onClick={() => setShowResult(false)}>
+              ✕
+            </button>
             <div id="ezoic-pub-ad-placeholder-109" />
             <h2>{t.solved}</h2>
             <div className="big-time">{formatTime(elapsedMs)}</div>

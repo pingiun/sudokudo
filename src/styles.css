@@ -661,11 +661,17 @@ body {
 }
 
 .modal-x {
-  position: absolute;
-  top: 8px;
-  right: 10px;
+  /* Sticky, so it stays in the visible top-right corner while the modal
+     scrolls; the negative margins tuck it into the padding without
+     shifting the content below. */
+  position: sticky;
+  top: -36px;
+  align-self: flex-end;
+  margin: -36px -30px -60px 0;
+  z-index: 1;
   border: 0;
-  background: none;
+  background: inherit;
+  border-radius: 50%;
   color: inherit;
   font-family: var(--font);
   font-size: 20px;
